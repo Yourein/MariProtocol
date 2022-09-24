@@ -93,10 +93,6 @@ uint8_t convCode(uint8_t Buf[]){
   return res;
 }
 
-//立ち上がりでデータ書き込んで、立ち下がりでデータを読ませる
-
-//コネクションが確立できて、シリアルからCRが読めたら送信開始 -> 0x0D
-
 void loop() {
   lpCnt++;
   if (syncState == CLOCK_BROADCAST){

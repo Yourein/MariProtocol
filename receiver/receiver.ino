@@ -9,10 +9,6 @@
 
 bool clockRaised = false;
 int receivePhase = RECEIVE_CLOCK_WAIT;
-int lpCnt = 0;
-
-const int syncClock = 120/2;
-const int readClock = 30/2;
 
 uint8_t Buf = 0;
 uint8_t receiveInd = 0;
@@ -63,11 +59,7 @@ void setup() {
   pinMode(DRX, INPUT);
 }
 
-//CRが受信できたら終了
-
 void loop() {
-  lpCnt++;
-
   if (receivePhase == RECEIVE_CLOCK_WAIT){
     if (clockRaised == false && digitalRead(CLOCK_RECEIVE)) {
       clockRaised = true;
@@ -75,7 +67,6 @@ void loop() {
     else if (clockRaised == true && digitalRead(CLOCK_RECEIVE) == LOW){
       clockRaised = false;
       receivePhase = RECEIVE_HANDSHAKE;
-      lpCnt = 0;
     }
   }
   else if (receivePhase == RECEIVE_HANDSHAKE){
@@ -93,7 +84,6 @@ void loop() {
     }
   }
   else {
-    //receivePhase = RECEIVE_CLOCK_WAIT;
     if (clockRaised == false) {
       if (digitalRead(CLOCK_RECEIVE) == HIGH) clockRaised = true;
     }
@@ -101,12 +91,10 @@ void loop() {
       if (digitalRead(CLOCK_RECEIVE) == LOW) {
         clockRaised = false;
         uint8_t bit = digitalRead(DRX);
-        //Serial.println(bit);
         Buf |= (bit<<(7-receiveInd));
         receiveInd++;
         
         if (receiveInd >= 8) {
-          //Serial.println(Buf, BIN);
           decode(Buf);
           Buf = 0;
           receiveInd = 0;
